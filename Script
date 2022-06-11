@@ -1,4 +1,35 @@
-	        local lplr = game.Players.LocalPlayer
+		local Client = game:GetService("Players").LocalPlayer
+		local AntiScript = Client.PlayerScripts:WaitForChild("Client", 7)
+	
+		for _,v in pairs(getgc()) do 
+			if type(v) == "function" then 
+				if getfenv(v).script == AntiScript then
+					pcall(function()
+						if getupvalue(v, 1) == Client then
+							setupvalue(v, 1, nil)
+						end 
+					end)
+				end
+			end 
+		end
+	
+		local Old; Old = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+			local Args = {...}
+			local Method = getnamecallmethod()
+	
+			if Method == "FireServer" and tostring(self) == "2Event" then
+				return wait(9e9)
+			end
+	
+			pcall(function()
+				Client.Character.Anticheat.Disabled = true
+			end)
+	
+			return Old(self, ...)
+		end))
+
+
+		local lplr = game.Players.LocalPlayer
 	        local grp = lplr:GetRankInGroup(7548958)
 
 	        local Players = game:GetService("Players")
