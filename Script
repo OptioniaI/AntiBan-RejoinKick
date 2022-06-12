@@ -31,31 +31,30 @@ local Old; Old = hookmetamethod(game, "__namecall", newcclosure(function(self, .
 	return Old(self, ...)
 end))
 
-
 if _G.M1 == true then
-    		    local lplr = game.Players.LocalPlayer
-    	        local grp = lplr:GetRankInGroup(7548958)
+    	    local lplr = game.Players.LocalPlayer
+            local grp = lplr:GetRankInGroup(7548958)
 
-    	        local Players = game:GetService("Players")
-    	        Players.PlayerAdded:Connect(function(player)
+            local Players = game:GetService("Players")
+            Players.PlayerAdded:Connect(function(player)
 
-    	        if player:IsInGroup(7548958) then
-    	        local x = {}
-    	        for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
-    	        if type(v) == "table" and v.maxPlayers > v.playing and v.id ~= game.JobId then
-    	            x[#x + 1] = v.id
-    	        end
-    	    end
-    	    if #x > 0 then
-    	            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, x[math.random(1, #x)])
-    	        else
-    	            warn("Couldn't find a server!")
-    	        end
-    	    end
-    	end)
-        getgenv().rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
+            if player:IsInGroup(7548958) then
+            local x = {}
+            for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
+            if type(v) == "table" and v.maxPlayers > v.playing and v.id ~= game.JobId then
+                x[#x + 1] = v.id
+            end
+        end
+        if #x > 0 then
+                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, x[math.random(1, #x)])
+            else
+                warn("Couldn't find a server!")
+            end
+        end
+    end)
+
+    getgenv().rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
         if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
-            task.wait(0.225)
             game:GetService("TeleportService"):Teleport(game.PlaceId)
         end
     end)
@@ -76,14 +75,9 @@ if _G.M2 == true then
         end
     end
 
-    local mt = getrawmetatable(game)
-    local nm = mt.__namecall
-    setreadonly(mt,false)
-    mt.__namecall = newcclosure(function(self,...)
-        if getnamecallmethod() == 'Kick' or getnamecallmethod() == 'kick' then
+    getgenv().rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
+        if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
             game:GetService("TeleportService"):Teleport(game.PlaceId)
         end
-
-        return nm(self,...)
     end)
 end
