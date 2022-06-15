@@ -1,5 +1,6 @@
-_G.M1 = true
-_G.M2 = false
+_G.M1 = false
+_G.M2 = true
+_G.M3 = false
 
 local Client = game:GetService("Players").LocalPlayer
 local AntiScript = Client.PlayerScripts:WaitForChild("Client", 7)
@@ -73,6 +74,33 @@ if _G.M2 == true then
                     game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, m.id)
                 end
             end
+        end
+    end
+
+    getgenv().rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
+        if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
+            task.wait(.55)
+            game:GetService("TeleportService"):Teleport(game.PlaceId)
+        end
+    end)
+end
+
+
+
+if _G.M3 == true then
+    for i, v in pairs(game:GetService("Players"):GetChildren()) do
+        if v:IsInGroup(7548958) then
+            local x = {}
+	        for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
+		    if type(v) == "table" and v.maxPlayers > v.playing and v.id ~= game.JobId then
+		    	x[#x + 1] = v.id
+		    end
+	        end
+	        if #x > 0 then
+	        	game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, x[math.random(1, #x)])
+	        else
+	        	warn("Error: ","Couldn't find a server.")
+	        end
         end
     end
 
