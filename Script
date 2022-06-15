@@ -1,6 +1,6 @@
 _G.M1 = false
-_G.M2 = true
-_G.M3 = false
+_G.M2 = false
+_G.M3 = true
 
 local Client = game:GetService("Players").LocalPlayer
 local AntiScript = Client.PlayerScripts:WaitForChild("Client", 7)
