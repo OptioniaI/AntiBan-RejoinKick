@@ -3,6 +3,9 @@ _G.M2 = false
 _G.M3 = false
 _G.M4 = true
 
+local Players = game:GetService("Players")
+local GroupID = 7548958
+
 local Client = game:GetService("Players").LocalPlayer
 local AntiScript = Client.PlayerScripts:WaitForChild("Client", 7)
 
@@ -116,7 +119,6 @@ end
 if _G.M4 then
     local NotifLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))()
     local Notify = NotifLib.Notify
-    local GroupID = 7548958
 
     Players.ChildAdded:Connect(function(Child)
         if Child:IsA("Player") then
@@ -141,6 +143,30 @@ if _G.M4 then
             end
         end
     end)
+
+    for i,v in pairs(Players:GetPlayers()) do
+        if v:IsA("Player") then
+            if v:IsInGroup(GroupID) then
+                if v:GetRankInGroup(255, 240, 5, 1) then
+                    local ServerTables = {}
+        	        for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
+        	    	    if type(v) == "table" and v.maxPlayers > v.playing and v.id ~= game.JobId then
+        	    		    ServerTables[#ServerTables + 1] = v.id
+        	    	    end
+        	        end
+        	        if #ServerTables > 0 then
+        	    	    game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, ServerTables[math.random(1, #ServerTables)])
+        	        else
+        	    	    Notify({
+                            Description = "Couldn't find a server to join",
+                            Title = "Error:",
+                            Duration = 5.75
+                        })
+        	        end
+                end
+            end
+        end
+    end
 
     getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
         if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
