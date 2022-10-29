@@ -144,7 +144,7 @@ if _G.M4 then
         end
     end)
 
-    for i,v in pairs(Players:GetPlayers()) do
+    for i,v in pairs(Players:GetChildren()) do
         if v:IsA("Player") then
             if v:IsInGroup(GroupID) then
                 if v:GetRankInGroup(255, 240, 5, 1) then
