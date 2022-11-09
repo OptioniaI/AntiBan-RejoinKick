@@ -1,7 +1,11 @@
 _G.M1 = false
 _G.M2 = false
 _G.M3 = false
-_G.M4 = true
+_G.M4 = false
+_G.M5 = true
+
+local NotifLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))()
+local Notify = NotifLib.Notify
 
 local Players = game:GetService("Players")
 local GroupID = 7548958
@@ -117,9 +121,6 @@ if _G.M3 == true then
 end
 
 if _G.M4 then
-    local NotifLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Kinlei/Dynissimo/main/Scripts/AkaliNotif.lua"))()
-    local Notify = NotifLib.Notify
-
     Players.ChildAdded:Connect(function(Child)
         if Child:IsA("Player") then
             if Child:IsInGroup(GroupID) then
@@ -165,6 +166,37 @@ if _G.M4 then
             end
         end
     end
+
+    getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
+        if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
+            task.wait(.55)
+            game:GetService("TeleportService"):Teleport(game.PlaceId)
+        end
+    end)
+end
+
+if _G.M5 then
+    Players.ChildAdded:Connect(function(Child)
+        if Child:IsInGroup(GroupID) then
+            if Child:GetRankInGroup(255, 240, 5, 1) then
+                local ServerTables = {}
+                for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
+            	    if type(v) == "table" and v.maxPlayers > v.playing and v.id ~= game.JobId then
+            		    ServerTables[#ServerTables + 1] = v.id
+            	    end
+                end
+                if #ServerTables > 0 then
+            	    game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, ServerTables[math.random(1, #ServerTables)])
+                else
+            	    Notify({
+                        Description = "Couldn't find a server to join",
+                        Title = "Error:",
+                        Duration = 5.75
+                    })
+                end
+            end
+        end
+    end)
 
     getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
         if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
