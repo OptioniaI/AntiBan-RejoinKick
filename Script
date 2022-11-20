@@ -18,28 +18,35 @@ if _G.AC1 then
     local hook1
     local hook2
     local hook3
+    
     game:GetService("ScriptContext"):SetTimeout(0.1)
-    function die(con)
+    
+    local function die(con)
         for i,v in pairs(getconnections(con)) do
             v:Disable()
         end
     end
-    function CharacterAdded(Character)
+    
+    local function CharacterAdded(Character)
         local Humanoid = Character:WaitForChild("Humanoid")
         die(Humanoid:GetPropertyChangedSignal("WalkSpeed"))
         die(Humanoid:GetPropertyChangedSignal("JumpPower"))
         die(Humanoid:GetPropertyChangedSignal("HipHeight"))
     end
+    
     newindex = hookmetamethod(game,"__newindex",newcclosure(function(self,prop,value)
         if prop == "Parent" and value == nil and getcallingscript() and tostring(getcallingscript()) == "Anticheat" then
             return
         end
+    
         return newindex(self,prop,value)
     end))
-
+    
     namecall = hookmetamethod(game,"__namecall",newcclosure(function(...)
         if checkcaller() then return namecall(...) end
+    
         local self,caller,method,args = ...,getcallingscript(),getnamecallmethod(),{...}; table.remove(args,1)
+    
         if method == "FireServer" then
             if tostring(self) == "2Event" then
                 return
@@ -47,9 +54,12 @@ if _G.AC1 then
         elseif method == "ClearAllChildren" then
             --return
         elseif method == "Clone" then
+    
         end
+    
         return namecall(...)
     end))
+    
     hook1 = hookfunction(Instance.new("Part").Destroy,function(...)
         if not checkcaller() then
             return
@@ -68,6 +78,7 @@ if _G.AC1 then
         end
         return hook3(...)
     end)
+    
     game:GetService("Players").LocalPlayer.CharacterAdded:Connect(CharacterAdded)
     if game:GetService("Players").LocalPlayer.Character then
         CharacterAdded(game:GetService("Players").LocalPlayer.Character)
@@ -75,19 +86,44 @@ if _G.AC1 then
 end
 
 if _G.AC2 then
+    local Client = game:GetService("Players").LocalPlayer
+    local AntiScript = Client.PlayerScripts:WaitForChild("Client", 7)
+    for _,v in pairs(getgc()) do 
+    	if type(v) == "function" then 
+    		if getfenv(v).script == AntiScript then
+    			pcall(function()
+    				if getupvalue(v, 1) == Client then
+    					setupvalue(v, 1, nil)
+    				end 
+    			end)
+    		end
+    	end 
+    end
 
+    local Old; Old = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+    	local Args = {...}
+    	local Method = getnamecallmethod()
+    
+    	if Method == "FireServer" and tostring(self) == "2Event" then
+    		return wait(9e9)
+    	end
+
+    	pcall(function()
+    		Client.Character.Anticheat.Disabled = true
+    	end)
+    	return Old(self, ...)
+    end))
 end
 
 if _G.M1 then
-    	    local lplr = game.Players.LocalPlayer
-            local grp = lplr:GetRankInGroup(7548958)
+    local lplr = game.Players.LocalPlayer
+    local grp = lplr:GetRankInGroup(7548958)
+    local Players = game:GetService("Players")
 
-            local Players = game:GetService("Players")
-            Players.PlayerAdded:Connect(function(player)
-
-            if player:IsInGroup(7548958) then
-            local x = {}
-            for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
+    Players.PlayerAdded:Connect(function(player)
+        if player:IsInGroup(7548958) then
+        local x = {}
+        for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
             if type(v) == "table" and v.maxPlayers > v.playing and v.id ~= game.JobId then
                 x[#x + 1] = v.id
             end
