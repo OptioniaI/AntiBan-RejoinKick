@@ -1,3 +1,5 @@
+_G.AC1 = true
+_G.AC2 = false
 _G.M1 = false
 _G.M2 = false
 _G.M3 = false
@@ -10,37 +12,73 @@ local Notify = NotifLib.Notify
 local Players = game:GetService("Players")
 local GroupID = 7548958
 
-local Client = game:GetService("Players").LocalPlayer
-local AntiScript = Client.PlayerScripts:WaitForChild("Client", 7)
+if _G.AC1 then
+    local namecall
+    local newindex
+    local hook1
+    local hook2
+    local hook3
+    game:GetService("ScriptContext"):SetTimeout(0.1)
+    function die(con)
+        for i,v in pairs(getconnections(con)) do
+            v:Disable()
+        end
+    end
+    function CharacterAdded(Character)
+        local Humanoid = Character:WaitForChild("Humanoid")
+        die(Humanoid:GetPropertyChangedSignal("WalkSpeed"))
+        die(Humanoid:GetPropertyChangedSignal("JumpPower"))
+        die(Humanoid:GetPropertyChangedSignal("HipHeight"))
+    end
+    newindex = hookmetamethod(game,"__newindex",newcclosure(function(self,prop,value)
+        if prop == "Parent" and value == nil and getcallingscript() and tostring(getcallingscript()) == "Anticheat" then
+            return
+        end
+        return newindex(self,prop,value)
+    end))
 
-for _,v in pairs(getgc()) do 
-	if type(v) == "function" then 
-		if getfenv(v).script == AntiScript then
-			pcall(function()
-				if getupvalue(v, 1) == Client then
-					setupvalue(v, 1, nil)
-				end 
-			end)
-		end
-	end 
+    namecall = hookmetamethod(game,"__namecall",newcclosure(function(...)
+        if checkcaller() then return namecall(...) end
+        local self,caller,method,args = ...,getcallingscript(),getnamecallmethod(),{...}; table.remove(args,1)
+        if method == "FireServer" then
+            if tostring(self) == "2Event" then
+                return
+            end
+        elseif method == "ClearAllChildren" then
+            --return
+        elseif method == "Clone" then
+        end
+        return namecall(...)
+    end))
+    hook1 = hookfunction(Instance.new("Part").Destroy,function(...)
+        if not checkcaller() then
+            return
+        end
+        return hook1(...)
+    end)
+    hook2 = hookfunction(Instance.new("Part").ClearAllChildren,function(...)
+        if not checkcaller() then
+            return
+        end
+        return hook2(...)
+    end)
+    hook3 = hookfunction(Instance.new("Part").Clone,function(...)
+        if not checkcaller() then
+            return
+        end
+        return hook3(...)
+    end)
+    game:GetService("Players").LocalPlayer.CharacterAdded:Connect(CharacterAdded)
+    if game:GetService("Players").LocalPlayer.Character then
+        CharacterAdded(game:GetService("Players").LocalPlayer.Character)
+    end
 end
 
-local Old; Old = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
-	local Args = {...}
-	local Method = getnamecallmethod()
+if _G.AC2 then
 
-	if Method == "FireServer" and tostring(self) == "2Event" then
-		return wait(9e9)
-	end
+end
 
-	pcall(function()
-		Client.Character.Anticheat.Disabled = true
-	end)
-
-	return Old(self, ...)
-end))
-
-if _G.M1 == true then
+if _G.M1 then
     	    local lplr = game.Players.LocalPlayer
             local grp = lplr:GetRankInGroup(7548958)
 
@@ -62,9 +100,9 @@ if _G.M1 == true then
         end
     end)
 
-    getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
-        if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
-            task.wait(.55)
+    getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(Child)
+        if Child.Name == "ErrorPrompt" and Child:FindFirstChild("MessageArea") and child.MessageArea:FindFirstChild("ErrorFrame") then
+            task.wait(0.5)
             game:GetService("TeleportService"):Teleport(game.PlaceId)
         end
     end)
@@ -72,7 +110,7 @@ end
 
 
 
-if _G.M2 == true then
+if _G.M2 then
     local Servers = game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
 
     for i, v in pairs(game:GetService("Players"):GetChildren()) do
@@ -85,9 +123,9 @@ if _G.M2 == true then
         end
     end
 
-    getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
-        if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
-            task.wait(.55)
+    getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(Child)
+        if Child.Name == "ErrorPrompt" and Child:FindFirstChild("MessageArea") and child.MessageArea:FindFirstChild("ErrorFrame") then
+            task.wait(0.5)
             game:GetService("TeleportService"):Teleport(game.PlaceId)
         end
     end)
@@ -95,7 +133,7 @@ end
 
 
 
-if _G.M3 == true then
+if _G.M3 then
     for i, v in pairs(game:GetService("Players"):GetChildren()) do
         if v:IsInGroup(7548958) then
             local x = {}
@@ -112,9 +150,9 @@ if _G.M3 == true then
         end
     end
 
-    getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
-        if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
-            task.wait(.55)
+    getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(Child)
+        if Child.Name == "ErrorPrompt" and Child:FindFirstChild("MessageArea") and child.MessageArea:FindFirstChild("ErrorFrame") then
+            task.wait(0.5)
             game:GetService("TeleportService"):Teleport(game.PlaceId)
         end
     end)
@@ -167,9 +205,9 @@ if _G.M4 then
         end
     end
 
-    getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
-        if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
-            task.wait(.55)
+    getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(Child)
+        if Child.Name == "ErrorPrompt" and Child:FindFirstChild("MessageArea") and child.MessageArea:FindFirstChild("ErrorFrame") then
+            task.wait(0.5)
             game:GetService("TeleportService"):Teleport(game.PlaceId)
         end
     end)
@@ -198,9 +236,9 @@ if _G.M5 then
         end
     end)
 
-    getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
-        if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
-            task.wait(.55)
+    getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(Child)
+        if Child.Name == "ErrorPrompt" and Child:FindFirstChild("MessageArea") and child.MessageArea:FindFirstChild("ErrorFrame") then
+            task.wait(0.5)
             game:GetService("TeleportService"):Teleport(game.PlaceId)
         end
     end)
